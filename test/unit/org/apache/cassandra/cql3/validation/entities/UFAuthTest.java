@@ -661,11 +661,11 @@ public class UFAuthTest extends CQLTester
             userPermissions.clear();
         }
 
-        public Set<Permission> authorize(AuthenticatedUser user, IResource resource)
+        public Boolean authorize(AuthenticatedUser user, IResource resource, Permission permission)
         {
             Pair<String, IResource> key = Pair.create(user.getName(), resource);
             Set<Permission> perms = userPermissions.get(key);
-            return perms != null ? perms : Collections.<Permission>emptySet();
+            return perms != null ? perms.contains(permission) : false;
         }
 
         public void grant(AuthenticatedUser performer,
