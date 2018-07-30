@@ -62,19 +62,10 @@ public class PermissionsCache implements PermissionsCacheMBean
         }
     }
 
-    public Set<Permission> getPermissions(AuthenticatedUser user, IResource resource)
+    public Boolean isAuthorized(AuthenticatedUser user, IResource resource, Permission permission)
     {
-        if (cache == null)
-            return authorizer.authorize(user, resource);
+        return authorizer.authorize(user, resource, permission);
 
-        try
-        {
-            return cache.get(Pair.create(user, resource));
-        }
-        catch (ExecutionException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     public void invalidate()
@@ -107,47 +98,6 @@ public class PermissionsCache implements PermissionsCacheMBean
     private LoadingCache<Pair<AuthenticatedUser, IResource>, Set<Permission>> initCache(
                                                              LoadingCache<Pair<AuthenticatedUser, IResource>, Set<Permission>> existing)
     {
-        if (authorizer instanceof AllowAllAuthorizer)
-            return null;
-
-        if (DatabaseDescriptor.getPermissionsValidity() <= 0)
-            return null;
-
-        LoadingCache<Pair<AuthenticatedUser, IResource>, Set<Permission>> newcache = CacheBuilder.newBuilder()
-                           .refreshAfterWrite(DatabaseDescriptor.getPermissionsUpdateInterval(), TimeUnit.MILLISECONDS)
-                           .expireAfterWrite(DatabaseDescriptor.getPermissionsValidity(), TimeUnit.MILLISECONDS)
-                           .maximumSize(DatabaseDescriptor.getPermissionsCacheMaxEntries())
-                           .build(new CacheLoader<Pair<AuthenticatedUser, IResource>, Set<Permission>>()
-                           {
-                               public Set<Permission> load(Pair<AuthenticatedUser, IResource> userResource)
-                               {
-                                   return authorizer.authorize(userResource.left, userResource.right);
-                               }
-
-                               public ListenableFuture<Set<Permission>> reload(final Pair<AuthenticatedUser, IResource> userResource,
-                                                                               final Set<Permission> oldValue)
-                               {
-                                   ListenableFutureTask<Set<Permission>> task = ListenableFutureTask.create(new Callable<Set<Permission>>()
-                                   {
-                                       public Set<Permission>call() throws Exception
-                                       {
-                                           try
-                                           {
-                                               return authorizer.authorize(userResource.left, userResource.right);
-                                           }
-                                           catch (Exception e)
-                                           {
-                                               logger.trace("Error performing async refresh of user permissions", e);
-                                               throw e;
-                                           }
-                                       }
-                                   });
-                                   cacheRefreshExecutor.execute(task);
-                                   return task;
-                               }
-                           });
-        if (existing != null)
-            newcache.putAll(existing.asMap());
-        return newcache;
+          return null;
     }
 }

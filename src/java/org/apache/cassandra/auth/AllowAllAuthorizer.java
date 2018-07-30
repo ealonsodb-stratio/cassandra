@@ -22,9 +22,9 @@ import java.util.Set;
 
 public class AllowAllAuthorizer implements IAuthorizer
 {
-    public Set<Permission> authorize(AuthenticatedUser user, IResource resource)
+    public Boolean authorize(AuthenticatedUser user, IResource resource, Permission permission)
     {
-        return resource.applicablePermissions();
+        return resource.applicablePermissions().contains(permission);
     }
 
     public void grant(AuthenticatedUser performer, Set<Permission> permissions, IResource resource, RoleResource to)

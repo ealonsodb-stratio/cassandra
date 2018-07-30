@@ -77,8 +77,8 @@ public class ListRolesStatement extends AuthorizationStatement
     {
         // If the executing user has DESCRIBE permission on the root roles resource, let them list any and all roles
         boolean hasRootLevelSelect = DatabaseDescriptor.getAuthorizer()
-                                                       .authorize(state.getUser(), RoleResource.root())
-                                                       .contains(Permission.DESCRIBE);
+                                                       .authorize(state.getUser(), RoleResource.root(),Permission.DESCRIBE);
+
         if (hasRootLevelSelect)
         {
             if (grantee == null)

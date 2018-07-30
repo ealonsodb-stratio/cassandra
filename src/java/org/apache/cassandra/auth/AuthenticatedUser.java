@@ -99,9 +99,9 @@ public class AuthenticatedUser
         return Roles.getRoles(role);
     }
 
-    public Set<Permission> getPermissions(IResource resource)
+    public Boolean isAuthorized(IResource resource, Permission permission)
     {
-        return permissionsCache.getPermissions(this, resource);
+        return permissionsCache.isAuthorized(this, resource, permission);
     }
 
     @Override

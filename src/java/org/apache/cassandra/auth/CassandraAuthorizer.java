@@ -71,10 +71,10 @@ public class CassandraAuthorizer implements IAuthorizer
 
     // Returns every permission on the resource granted to the user either directly
     // or indirectly via roles granted to the user.
-    public Set<Permission> authorize(AuthenticatedUser user, IResource resource)
+    public Boolean authorize(AuthenticatedUser user, IResource resource, Permission permission)
     {
         if (user.isSuper())
-            return resource.applicablePermissions();
+            return resource.applicablePermissions().contains(permission);
 
         Set<Permission> permissions = EnumSet.noneOf(Permission.class);
         try
@@ -92,7 +92,7 @@ public class CassandraAuthorizer implements IAuthorizer
             throw new RuntimeException(e);
         }
 
-        return permissions;
+        return permissions.contains(permission);
     }
 
     public void grant(AuthenticatedUser performer, Set<Permission> permissions, IResource resource, RoleResource grantee)

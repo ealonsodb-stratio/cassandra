@@ -358,7 +358,7 @@ public class ClientState
     private void checkPermissionOnResourceChain(Permission perm, IResource resource)
     {
         for (IResource r : Resources.chain(resource))
-            if (authorize(r).contains(perm))
+            if (authorize(r, perm))
                 return;
 
         throw new UnauthorizedException(String.format("User %s has no %s permission on %s or any of its parents",
@@ -427,8 +427,8 @@ public class ClientState
         return new CassandraVersion[]{ QueryProcessor.CQL_VERSION };
     }
 
-    private Set<Permission> authorize(IResource resource)
+    private Boolean authorize(IResource resource, Permission permission)
     {
-        return user.getPermissions(resource);
+        return user.isAuthorized(resource, permission);
     }
 }
